@@ -2,12 +2,14 @@ package com.cb.apiandroid;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb.apiandroid.modelo.MyApiRetrofit;
 import com.cb.apiandroid.modelo.Pokemon;
+import com.cb.apiandroid.modelo.PokemonAdapter;
 import com.cb.apiandroid.modelo.ResultPokemon;
 
 import java.util.ArrayList;
@@ -19,16 +21,16 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
 
-    TextView nomre_pokemon;
+    PokemonAdapter pokemonAdapter;
     ArrayList<Pokemon> pokemonArrayList = new ArrayList<Pokemon>();
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        nomre_pokemon = (TextView) findViewById(R.id.nomre_pokemon);
-
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getPokemon();
     }
 
@@ -42,9 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.v("array", "size" + response);
 
+
                 pokemonArrayList = response.body().getResults();
 
-                nomre_pokemon.setText(pokemonArrayList.get(0).getName());
+                if (pokemonArrayList.size() > 0) {
+                    mostarDatos(pokemonArrayList);
+                }
 
             }
 
@@ -55,6 +60,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+
+    private void mostarDatos(ArrayList<Pokemon> pokemonArrayList) {
+
+        pokemonAdapter = new PokemonAdapter(getApplicationContext(), pokemonArrayList);
+        pokemonAdapter.notifyDataSetChanged();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(pokemonAdapter);
+        pokemonAdapter.notifyDataSetChanged();
 
     }
 }
